@@ -57,6 +57,7 @@ export default function RootLayout({
         <meta name="robots" content="index, follow" />
         <meta name="author" content="Campanha de Vacinação Raiva 2024" />
         <meta name="theme-color" content="#ffffff" />
+        <meta name="google-adsense-account" content="ca-pub-1800200285181005" />
         <link rel="canonical" href="https://rabies-vaccine-location-finder-gyn.vercel.app/" />
         <link rel="icon" href="/favicon.ico" sizes="32x32" type="image/x-icon" />
         <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1800200285181005" crossOrigin="anonymous"></script>

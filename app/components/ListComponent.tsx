@@ -4,6 +4,8 @@ import DirectionsCarRoundedIcon from '@mui/icons-material/DirectionsCarRounded';
 import AccessTimeRoundedIcon from '@mui/icons-material/AccessTimeRounded';
 import LocationOnIcon from '@mui/icons-material/LocationOn';
 
+const isBrowser = typeof window !== 'undefined';
+
 const ListComponent = ({ vaccinationPoints, userLocation }: { vaccinationPoints: VaccinationPoint[], userLocation: { lat: number, lng: number } }) => {
   return (
     <div className="w-full overflow-y-scroll overflow-x-hidden custom-scrollbar h-[79vh] max-sm:h-[66vh] px-3">
@@ -36,10 +38,12 @@ const ListComponent = ({ vaccinationPoints, userLocation }: { vaccinationPoints:
           </div>
           <button
             onClick={() => {
-              window.open(
-                `https://www.google.com/maps/dir/?api=1&origin=${userLocation.lat},${userLocation.lng}&destination=${point.latitude},${point.longitude}&travelmode=driving`,
-                '_blank'
-              );
+              if (isBrowser) {
+                window.open(
+                  `https://www.google.com/maps/dir/?api=1&origin=${userLocation.lat},${userLocation.lng}&destination=${point.latitude},${point.longitude}&travelmode=driving`,
+                  '_blank'
+                );
+              }
             }}
             className="flex items-center text-[#0051D6] hover:text-[#00B2FF] underline"
           >

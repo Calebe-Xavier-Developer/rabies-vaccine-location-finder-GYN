@@ -1,6 +1,10 @@
 'use client'
 import { useState } from 'react';
-import MapComponent from './components/MapComponent';
+import dynamic from 'next/dynamic';
+
+const MapComponent = dynamic(() => import('./components/MapComponent'), {
+  ssr: false,
+});
 import ListComponent from './components/ListComponent';
 import type { LocationType, VaccinationPoint } from './global.types';
 import WestRoundedIcon from '@mui/icons-material/WestRounded';
@@ -139,7 +143,7 @@ export default function Home() {
               {viewMap ? 'Ver Lista' : 'Ver Mapa'}
             </button>
 
-            <div className={`${viewMap ? 'px-5' : 'mt-4'} w-full max-w-3xl`}>
+            <div className={`${viewMap && 'px-5'} mt-4 w-full max-w-3xl`}>
               {viewMap ? (
                 <MapComponent userLocation={location} vaccinationPoints={places} viewMap={viewMap} />
               ) : (

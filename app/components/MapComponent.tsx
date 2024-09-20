@@ -15,6 +15,8 @@ const vaccinationIcon = new L.Icon({
   iconSize: [30, 30],
 });
 
+const isBrowser = typeof window !== 'undefined';
+
 const MapComponent = ({
   userLocation,
   vaccinationPoints,
@@ -26,9 +28,13 @@ const MapComponent = ({
 }) => {
   const [activeMarker, setActiveMarker] = useState<number | null>(null);
 
+  if (!isBrowser || !userLocation || !vaccinationIcon) {
+    return null;
+  }
+
   return (
     <div style={{ visibility: viewMap ? 'visible' : 'hidden' }}>
-      <MapContainer center={userLocation} className="h-[400px] max-sm:h-[300px] min-md:mt-8" zoom={12} style={{ width: '100%' }}>
+      <MapContainer center={userLocation} className="h-[400px] max-sm:h-[300px]" zoom={12} style={{ width: '100%' }}>
         <TileLayer
           url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
           attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
@@ -47,10 +53,12 @@ const MapComponent = ({
             icon={vaccinationIcon}
             eventHandlers={{
               click: () => {
-                window?.open(
-                `https://www.google.com/maps/dir/?api=1&origin=${userLocation.lat},${userLocation.lng}&destination=${point.latitude},${point.longitude}&travelmode=driving`,
-                '_blank'
-              );
+                if (isBrowser) {
+                  window.open(
+                    `https://www.google.com/maps/dir/?api=1&origin=${userLocation.lat},${userLocation.lng}&destination=${point.latitude},${point.longitude}&travelmode=driving`,
+                    '_blank'
+                  );
+                }
                 setActiveMarker(index);
               },
             }}
