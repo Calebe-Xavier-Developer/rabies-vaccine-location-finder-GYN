@@ -55,7 +55,6 @@ export default function Home() {
 
       const responses = await Promise.all(allPromises);
 
-      // Combine results and calculate distances/durations
       const combinedDistances: VaccinationPointWithDistance[] = [];
       responses.forEach((response, batchIndex) => {
         response.distances[0].forEach((distance: number, index: number) => {

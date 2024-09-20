@@ -40,7 +40,7 @@ const MapComponent = ({
           attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
         />
 
-        {userLocation?.lat && userLocation?.lng && (
+        {userLocation?.lat !== null && userLocation?.lng !== null && (
           <Marker position={userLocation} icon={userIcon}>
             <Popup>Você está aqui</Popup>
           </Marker>
