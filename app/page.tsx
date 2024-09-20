@@ -13,6 +13,11 @@ type VaccinationPointWithDistance = VaccinationPoint & {
   duration: number;
 };
 
+type DistanceElement = {
+  distance: { value: number };
+  duration: { value: number };
+};
+
 export default function Home() {
   const [loading, setLoading] = useState(false);
   const [location, setLocation] = useState<LocationType>({ lat: -16.6869, lng: -49.2648 });
@@ -20,7 +25,7 @@ export default function Home() {
   const [viewList, setViewList] = useState(false);
   const [places, setPlaces] = useState<VaccinationPoint[]>(locations);
 
-  const partitionArray = (array: any[], chunkSize: number) => {
+  const partitionArray = (array: VaccinationPoint[], chunkSize: number): VaccinationPoint[][] => {
     const result = [];
     for (let i = 0; i < array.length; i += chunkSize) {
       result.push(array.slice(i, i + chunkSize));
@@ -48,9 +53,9 @@ export default function Home() {
 
         Promise.all(allPromises)
           .then(responses => {
-            let combinedDistances: VaccinationPointWithDistance[] = [];
+            const combinedDistances: VaccinationPointWithDistance[] = [];
             responses.forEach((response, batchIndex) => {
-              response.rows[0].elements.forEach((element: any, index: number) => {
+              response.rows[0].elements.forEach((element: DistanceElement, index: number) => {
                 const originalIndex = batchIndex * destinationsPerRequest + index;
                 combinedDistances.push({
                   ...places[originalIndex],
