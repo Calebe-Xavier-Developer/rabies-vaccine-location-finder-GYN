@@ -6,7 +6,7 @@ import { useState } from 'react';
 const MapComponent = ({
   userLocation,
   vaccinationPoints,
-  viewMap, // Prop para controlar a visibilidade do mapa
+  viewMap,
 }: {
   userLocation: LocationType;
   vaccinationPoints: VaccinationPoint[];
@@ -24,15 +24,15 @@ const MapComponent = ({
   const getCustomIcon = () => {
     if (window.google?.maps) {
       return {
-        url: 'https://maps.google.com/mapfiles/ms/icons/blue-dot.png', // Ícone azul para sua localização
-        scaledSize: new window.google.maps.Size(40, 40), // Definir o tamanho do marcador
+        url: 'https://maps.google.com/mapfiles/ms/icons/blue-dot.png',
+        scaledSize: new window.google.maps.Size(40, 40),
       };
     }
     return undefined;
   };
 
   return (
-    <div style={{ visibility: viewMap ? 'visible' : 'hidden' }}> {/* Visibilidade do mapa */}
+    <div style={{ visibility: viewMap ? 'visible' : 'hidden' }}>
       <GoogleMap
         mapContainerStyle={mapContainerStyle}
         center={center}

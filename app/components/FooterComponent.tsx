@@ -1,17 +1,17 @@
 'use client'
 import FavoriteIcon from '@mui/icons-material/Favorite';
 import GitHubIcon from '@mui/icons-material/GitHub';
-import PixIcon from '@mui/icons-material/AccountBalanceWallet'; // Ícone para Pix
+import PixIcon from '@mui/icons-material/AccountBalanceWallet';
 import { useState } from 'react';
 
 const FooterComponent = () => {
-  const pixKey = process.env.NEXT_PUBLIC_PIX_KEY || ''; // Obtém a chave Pix do .env
+  const pixKey = process.env.NEXT_PUBLIC_PIX_KEY || '';
   const [copied, setCopied] = useState(false);
 
   const copyToClipboard = () => {
     navigator.clipboard.writeText(pixKey).then(() => {
       setCopied(true);
-      setTimeout(() => setCopied(false), 2000); // Define um timeout para resetar o estado após 2 segundos
+      setTimeout(() => setCopied(false), 2000);
     });
   };
 
@@ -24,7 +24,7 @@ const FooterComponent = () => {
         </a>
       </p>
       <p className="relative flex items-center text-center max-sm:text-sm max-sm:flex-col">
-        Gostou deste projeto? Apoie o desenvolvedor com uma doação para ajudar a construir mais soluções incríveis! Faça uma doação via Pix:
+        Gostou deste projeto? Apoie o desenvolvedor com uma doação para ajudar a construir mais soluções incríveis! Faça sua doação via Pix:
         <span
           className="font-semibold mx-1 cursor-pointer underline max-sm:mt-3"
           onClick={copyToClipboard}
