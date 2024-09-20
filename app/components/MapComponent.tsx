@@ -1,7 +1,19 @@
 'use client';
-import { GoogleMap, Marker, InfoWindow } from '@react-google-maps/api';
+import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
 import type { LocationType, VaccinationPoint } from '../global.types';
 import { useState } from 'react';
+import 'leaflet/dist/leaflet.css';
+import L from 'leaflet';
+
+const userIcon = new L.Icon({
+  iconUrl: 'https://maps.google.com/mapfiles/ms/icons/blue-dot.png',
+  iconSize: [40, 40],
+});
+
+const vaccinationIcon = new L.Icon({
+  iconUrl: 'https://cdn-icons-png.flaticon.com/512/684/684908.png',
+  iconSize: [30, 30],
+});
 
 const MapComponent = ({
   userLocation,
@@ -14,66 +26,44 @@ const MapComponent = ({
 }) => {
   const [activeMarker, setActiveMarker] = useState<number | null>(null);
 
-  const mapContainerStyle = {
-    width: '100%',
-    height: '400px',
-  };
-
-  const center = userLocation ? { lat: userLocation.lat, lng: userLocation.lng } : { lat: -16.6869, lng: -49.2648 };
-
-  const getCustomIcon = () => {
-    if (window.google?.maps) {
-      return {
-        url: 'https://maps.google.com/mapfiles/ms/icons/blue-dot.png',
-        scaledSize: new window.google.maps.Size(40, 40),
-      };
-    }
-    return undefined;
-  };
-
   return (
     <div style={{ visibility: viewMap ? 'visible' : 'hidden' }}>
-      <GoogleMap
-        mapContainerStyle={mapContainerStyle}
-        center={center}
-        zoom={12}
-      >
-        {userLocation?.lat !== null && userLocation?.lng !== null && (
-          <Marker
-            position={{ lat: userLocation.lat, lng: userLocation.lng }}
-            icon={getCustomIcon()}
-            label={{
-              text: 'Você',
-              fontSize: '14px',
-              color: 'blue',
-            }}
-          />
+      <MapContainer center={userLocation} className="h-[400px] max-sm:h-[300px] min-md:mt-8" zoom={12} style={{ width: '100%' }}>
+        <TileLayer
+          url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+          attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+        />
+
+        {userLocation?.lat && userLocation?.lng && (
+          <Marker position={userLocation} icon={userIcon}>
+            <Popup>Você está aqui</Popup>
+          </Marker>
         )}
-        {vaccinationPoints.map((point: VaccinationPoint, index) => (
+
+        {vaccinationPoints.map((point, index) => (
           <Marker
             key={`${point.name}-index-${index}`}
             position={{ lat: point.latitude, lng: point.longitude }}
-            onMouseOver={() => setActiveMarker(index)}
-            onMouseOut={() => setActiveMarker(null)}
-            onClick={() => {
-              window.open(
+            icon={vaccinationIcon}
+            eventHandlers={{
+              click: () => {
+                window?.open(
                 `https://www.google.com/maps/dir/?api=1&origin=${userLocation.lat},${userLocation.lng}&destination=${point.latitude},${point.longitude}&travelmode=driving`,
                 '_blank'
               );
+                setActiveMarker(index);
+              },
             }}
           >
             {activeMarker === index && (
-              <InfoWindow
-                position={{ lat: point.latitude, lng: point.longitude }}
-              >
-                <div>
-                  <h3>{point.name}</h3>
-                </div>
-              </InfoWindow>
+              <Popup>
+                <h3>{point.name}</h3>
+                <p>{point.address}</p>
+              </Popup>
             )}
           </Marker>
         ))}
-      </GoogleMap>
+      </MapContainer>
     </div>
   );
 };

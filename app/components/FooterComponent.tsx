@@ -16,14 +16,15 @@ const FooterComponent = () => {
   };
 
   return (
-    <footer className="flex flex-col items-center justify-center w-full max-sm:h-[150px] min-md:h-[90px] bg-burnt-orange space-y-2">
-      <p className="flex items-center text-center max-sm:text-xs">
-        Created with <FavoriteIcon className="text-red-600 mx-1" /> by Calebe Xavier - My profile on
+    <footer className="flex flex-col items-center justify-center w-full max-sm:h-[22vh] min-md:h-[10vh] bg-burnt-orange space-y-2">
+      <p className="flex items-center text-center max-sm:text-[9px] text-nowrap ">
+        Created with <FavoriteIcon className="text-red-600 mx-1" fontSize='small' /> by Calebe Xavier - My profile on 
         <a target="_blank" href="https://github.com/Calebe-Xavier-Developer" className="flex items-center text-center ml-1">
-          <GitHubIcon className="text-purple-800 mx-1" />Github
+          <GitHubIcon className="text-purple-800 mx-1 max-sm:text-xs" fontSize='small' />
+          Github
         </a>
       </p>
-      <p className="relative flex items-center text-center max-sm:text-sm max-sm:flex-col">
+      <p className="relative flex items-center text-center max-sm:text-xs max-sm:flex-col">
         Gostou deste projeto? Apoie o desenvolvedor com uma doação para ajudar a construir mais soluções incríveis! Faça sua doação via Pix:
         <span
           className="font-semibold mx-1 cursor-pointer underline max-sm:mt-3"

@@ -46,7 +46,6 @@ export const metadata: Metadata = {
   },
 };
 
-
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -59,8 +58,7 @@ export default function RootLayout({
         <meta name="author" content="Campanha de Vacinação Raiva 2024" />
         <meta name="theme-color" content="#ffffff" />
         <link rel="canonical" href="https://rabies-vaccine-location-finder-gyn.vercel.app/" />
-        <link rel="icon" type="image/png" href="/favicon.png" sizes="32x32" />
-        <link rel="icon" type="image/x-icon" href="/favicon.ico" />
+        <link rel="icon" href="/favicon.ico" sizes="32x32" type="image/x-icon" />
         <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1800200285181005" crossOrigin="anonymous"></script>
       </head>
       <body
