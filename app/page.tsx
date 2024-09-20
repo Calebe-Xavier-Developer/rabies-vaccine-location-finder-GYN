@@ -1,101 +1,140 @@
-import Image from "next/image";
+'use client'
+import { useState } from 'react';
+import MapComponent from './components/MapComponent';
+import ListComponent from './components/ListComponent';
+import type { LocationType, VaccinationPoint } from './global.types';
+import WestRoundedIcon from '@mui/icons-material/WestRounded';
+import { LoadScript } from '@react-google-maps/api';
+import { locations } from './utils';
+import HourglassBottomIcon from '@mui/icons-material/HourglassBottom';
+
+type VaccinationPointWithDistance = VaccinationPoint & {
+  distance: number;
+  duration: number;
+};
 
 export default function Home() {
-  return (
-    <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
-      <main className="flex flex-col gap-8 row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="https://nextjs.org/icons/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="list-inside list-decimal text-sm text-center sm:text-left font-[family-name:var(--font-geist-mono)]">
-          <li className="mb-2">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] px-1 py-0.5 rounded font-semibold">
-              app/page.tsx
-            </code>
-            .
-          </li>
-          <li>Save and see your changes instantly.</li>
-        </ol>
+  const [loading, setLoading] = useState(false);
+  const [location, setLocation] = useState<LocationType>({ lat: -16.6869, lng: -49.2648 });
+  const [viewMap, setViewMap] = useState(false);
+  const [viewList, setViewList] = useState(false);
+  const [places, setPlaces] = useState<VaccinationPoint[]>(locations);
 
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="https://nextjs.org/icons/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:min-w-44"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
+  const partitionArray = (array: any[], chunkSize: number) => {
+    const result = [];
+    for (let i = 0; i < array.length; i += chunkSize) {
+      result.push(array.slice(i, i + chunkSize));
+    }
+    return result;
+  }
+
+  const findLocation = () => {
+    setLoading(true);
+    navigator.geolocation.getCurrentPosition(
+      (position) => {
+        const userLat = position.coords.latitude;
+        const userLng = position.coords.longitude;
+
+        setLocation({ lat: userLat, lng: userLng });
+
+        const destinationsPerRequest = 25;
+        const destinationBatches = partitionArray(places, destinationsPerRequest);
+
+        const allPromises = destinationBatches.map((batch) => {
+          const destinations = batch.map(place => `${place.latitude},${place.longitude}`).join('|');
+          return fetch(`/api/distancematrix?origins=${userLat},${userLng}&destinations=${destinations}`)
+            .then(response => response.json());
+        });
+
+        Promise.all(allPromises)
+          .then(responses => {
+            let combinedDistances: VaccinationPointWithDistance[] = [];
+            responses.forEach((response, batchIndex) => {
+              response.rows[0].elements.forEach((element: any, index: number) => {
+                const originalIndex = batchIndex * destinationsPerRequest + index;
+                combinedDistances.push({
+                  ...places[originalIndex],
+                  distance: element.distance.value / 1000,
+                  duration: element.duration.value / 60,
+                });
+              });
+            });
+
+            combinedDistances.sort((a, b) => a.distance - b.distance);
+
+            setPlaces(combinedDistances);
+            setLoading(false);
+            setViewList(true);
+          })
+          .catch(error => {
+            console.error('Erro ao calcular distâncias', error);
+            setLoading(false);
+          });
+      },
+      (error) => {
+        console.error('Erro ao obter localização', error);
+        setLoading(false);
+      }
+    );
+  };
+
+  const resetView = () => {
+    setViewList(false);
+    setViewMap(false);
+  };
+
+  const renderButton = () => {
+    return (
+      <button
+        onClick={findLocation}
+        className={`w-[200px] h-[200px] rounded-full bg-vibrant-green text-light-beige flex items-center justify-center ${loading ? '' : 'animation-pulse'}`}
+        disabled={loading}
+      >
+        {loading ? (
+          <div className="flex justify-center items-center">
+            <HourglassBottomIcon fontSize="large" className="animate-spin h-5 w-5 mr-3 " viewBox="0 0 24 24" />
+            <p>Procurando...</p>
+          </div>
+        ) : (
+          <p className="font-semibold text-lg">Localizar</p>
+        )}
+      </button>
+    )
+  }
+
+  return (
+    <LoadScript googleMapsApiKey={process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY ?? ''}>
+      <main className="w-screen max-sm:h-[calc(100vh-150px)] min-md:h-[calc(100vh-90px)] relative bg-cover bg-center bg-no-repeat" style={{ backgroundImage: "url(/bg.webp)" }}>
+        <div className="flex flex-col items-center w-full h-full" >
+          {viewList ? (
+            <>
+              <button onClick={resetView} className="absolute top-4 left-4 text-soft-gold">
+                <WestRoundedIcon fontSize="large" />
+              </button>
+
+              <button onClick={() => setViewMap(!viewMap)} className={`bg-black bg-opacity-50 hover:bg-opacity-65 h-[33px] w-[130px] mt-4 font-bold text-soft-golden rounded-md ${viewMap && 'max-sm:mb-[130px]'}`}>
+                {viewMap ? 'Ver Lista' : 'Ver Mapa'}
+              </button>
+
+              <div className={`${viewMap ? 'px-5' : 'mt-8'} w-full max-w-3xl`}>
+                {viewMap ? (
+                  <MapComponent userLocation={location} vaccinationPoints={places} viewMap={viewMap} />
+                ) : (
+                  <ListComponent vaccinationPoints={places} userLocation={location} />
+                )}
+              </div>
+            </>
+          ) : (
+            <div className="flex flex-col items-center min-md:mt-[5vh] max-sm:mt-3 max-sm:h-[60vh] min-md:h-[50vh] justify-between max-sm:px-4">
+              <div className="w-fit bg-black bg-opacity-50 border-moss-green border-2 rounded-lg p-2 mt-3 text-center">
+                <h1 className="max-sm:text-2xl min-md:text-4xl font-bold mb-4 text-light-green">Campanha de vacinação Antirrábica 2024 - Goiânia</h1>
+                <p className="mb-8 max-sm:text-base min-md:text-xl font-semibold text-light-green">Encontre um centro de vacinação próximo a você</p>
+              </div>
+              {renderButton()}
+            </div>
+          )}
         </div>
       </main>
-      <footer className="row-start-3 flex gap-6 flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="https://nextjs.org/icons/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="https://nextjs.org/icons/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="https://nextjs.org/icons/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
-    </div>
+    </LoadScript>
   );
 }

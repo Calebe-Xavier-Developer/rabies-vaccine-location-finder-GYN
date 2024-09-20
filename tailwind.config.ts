@@ -9,9 +9,20 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
-        background: "var(--background)",
-        foreground: "var(--foreground)",
+        'moss-green': '#355E3B', // Verde musgo escuro
+        'gray-brown': '#4E4C4A', // Marrom acinzentado
+        'soft-gold': '#F4D03F', // Dourado claro
+        'light-beige': '#F5F5DC', // Bege claro
+        'off-white': '#FAF9F6', // Branco quebrado
+        'light-green': '#B4E197', // Verde claro
+        'soft-golden': '#D4AF37', // Dourado suave
+        'vibrant-green': '#3CB371', // Verde vibrante
+        'burnt-orange': '#E67E22', // Laranja queimado
       },
+      screens: {
+        'max-sm': { 'max': '1080px' },
+        'min-md': {'min': '1081px'},
+      }
     },
   },
   plugins: [],
