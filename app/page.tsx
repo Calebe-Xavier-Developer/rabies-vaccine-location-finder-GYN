@@ -130,7 +130,7 @@ export default function Home() {
   };
 
   return (
-    <main className="w-screen max-sm:h-[78vh] min-md:h-[90vh] relative bg-cover bg-center bg-no-repeat" style={{ backgroundImage: "url(/bg.webp)" }}>
+    <main className="w-screen max-sm:h-[80vh] min-md:h-[90vh] relative bg-cover bg-center bg-no-repeat" style={{ backgroundImage: "url(/bg.webp)" }}>
       <div className="flex flex-col items-center w-full h-full">
         {viewList ? (
           <>

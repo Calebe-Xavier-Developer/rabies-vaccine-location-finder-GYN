@@ -16,7 +16,7 @@ const FooterComponent = () => {
   };
 
   return (
-    <footer className="flex flex-col items-center justify-center w-full max-sm:h-[22vh] min-md:h-[10vh] bg-burnt-orange space-y-2">
+    <footer className="flex flex-col items-center justify-center w-full max-sm:h-[20vh] min-md:h-[10vh] bg-burnt-orange space-y-2">
       <p className="flex items-center text-center max-sm:text-[9px] text-nowrap ">
         Created with <FavoriteIcon className="text-red-600 mx-1" fontSize='small' /> by Calebe Xavier - My profile on 
         <a target="_blank" href="https://github.com/Calebe-Xavier-Developer" className="flex items-center text-center ml-1">
