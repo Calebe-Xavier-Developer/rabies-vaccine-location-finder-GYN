@@ -83,8 +83,7 @@ export default function Home() {
       (position) => {
         const userLat = position.coords.latitude;
         const userLng = position.coords.longitude;
-        
-        console.log('Lat:', userLat, 'Long:', userLng);
+
         setLocation({ lat: userLat, lng: userLng });
 
         fetchDistances({ lat: userLat, lng: userLng }, places)
